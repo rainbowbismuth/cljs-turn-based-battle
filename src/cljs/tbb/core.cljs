@@ -18,6 +18,7 @@
   (:require [tbb.combatant :as combatant]
             [tbb.simulation :as simulation]
             [tbb.move :as move]
+            [tbb.class :as class]
             [tbb.command :as command]
             [tbb.ai.alphabeta :as alphabeta]
             [reagent.core :as r]))
@@ -124,7 +125,7 @@
   [cmbt]
   [:span
     {:class "combatant-class tooltip-container"}
-    (str (:class cmbt))
+    (str (class/name-of (:class cmbt)))
     (tooltip "The unit's class")])
 
 (defn view-combatant-name
@@ -170,7 +171,7 @@
       {:class "combatant-move tooltip-container"
        :on-click #(select-move! mv)}
       {:class "combatant-move tooltip-container combatant-move-unusable"})
-    (str mv " " (apply str (repeat (move/cost mv) "•")))
+    (str (move/name-of mv) " " (apply str (repeat (move/cost mv) "•")))
     (tooltip (move/tooltip mv))])
 
 (defn view-moves

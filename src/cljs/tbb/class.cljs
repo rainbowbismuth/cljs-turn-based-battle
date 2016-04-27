@@ -16,6 +16,11 @@
 
 (ns tbb.class)
 
+(def name-of
+  {:warrior "Warrior"
+   :thief "Thief"
+   :cleric "Cleric"})
+
 (def strength
   {:warrior 1.0,
    :thief 1.2,

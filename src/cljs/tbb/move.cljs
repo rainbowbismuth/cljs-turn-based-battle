@@ -21,6 +21,11 @@
    :heal 2
    :defend 0})
 
+(def name-of
+  {:attack "Attack"
+   :heal "Heal"
+   :defend "Defend"})
+
 (def tooltip
   {:attack "Attack a target, costs 1 AP"
    :heal "Heal a target for 45 HP, costs 2 AP"
