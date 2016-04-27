@@ -56,15 +56,15 @@
   [cmbt]
   (class/strength (:class cmbt)))
 
-(defn defense
-  [cmbt]
-  (class/defense (:class cmbt)))
-
-(defn defenseBonus
+(defn defense-bonus
   [cmbt]
   (if (= (:state cmbt) :defending)
     0.5
     1.0))
+
+(defn defense
+  [cmbt]
+  (* (defense-bonus cmbt) (class/defense (:class cmbt))))
 
 (defn speed
   [cmbt]
