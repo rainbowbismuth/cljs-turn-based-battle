@@ -1,12 +1,47 @@
 (ns tbb.core
   (:require [reagent.core :as r]))
 
-(defonce click-count (r/atom 0))
+(defonce model-atom (r/atom nil))
 
-(defn state-ful-with-atom []
-  [:button
-    {:on-click #(swap! click-count inc)}
-    "I have been clicked " @click-count " times!"])
+(def party-to-css-class {:ai "ai-party", :user "user-party"})
 
-(r/render-component [state-ful-with-atom]
+(defn view-party
+  [party model]
+  [:div
+    {:class (party-to-css-class party)}
+    "no party atm!"])
+
+(defn view-combat-log-line
+  [idx line]
+  (let [op (- 1.0 (* idx 0.08))]
+    ^{:key idx}
+    [:div
+      {:class "combat-log-line"
+       :style {:opacity op}}
+      line]))
+
+(defn view-combat-log
+  [model]
+  [:div
+    {:class "combat-log"}
+    (map-indexed view-combat-log-line ["just" "a" "test" "really" "for reals" "yup"])])
+
+(defn view-ct-bar
+  [model]
+  [:div
+    {:class "ct-bar"}
+    "still just a test"])
+
+(defn view
+  [model]
+  [:div
+    {:class "game"}
+    [:div
+      {:class "main"}
+      (view-party :ai @model-atom)
+      (view-party :user @model-atom)
+      (view-combat-log @model-atom)]
+    (view-ct-bar @model-atom)])
+
+(r/render-component [view]
   (.getElementById js/document "app"))
