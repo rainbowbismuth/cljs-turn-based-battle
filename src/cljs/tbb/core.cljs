@@ -148,13 +148,6 @@
       (str "This unit is a "
            (class/name-of (:class cmbt))))])
 
-; (defn view-combatant-class
-;   [cmbt]
-;   [:span
-;     {:class "combatant-class tooltip-container"}
-;     (str (class/name-of (:class cmbt)))
-;     (tooltip "The unit's class")])
-
 (defn view-combatant-name
   [cmbt]
   [:span
