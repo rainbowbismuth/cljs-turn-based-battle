@@ -39,6 +39,10 @@
   [cmbt]
   (.-ap cmbt))
 
+(defn ct
+  [cmbt]
+  (.-ct cmbt))
+
 (defn hp
   [cmbt]
   (.-hp cmbt))

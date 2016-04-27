@@ -64,5 +64,8 @@
 (deftest can-play-ai
   (is (not= sim (alphabeta/play-ai sim))))
 
+(deftest non-empty-turn-order
+  (is (not (empty? (simulation/turn-order-list sim)))))
+
 (enable-console-print!)
 (run-tests)

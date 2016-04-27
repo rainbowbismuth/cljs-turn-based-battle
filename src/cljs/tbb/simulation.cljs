@@ -25,6 +25,10 @@
   [sim]
   (.-combatants sim))
 
+(defn combat-log
+  [sim]
+  (.-combat-log sim))
+
 (defn- update-cmbt
   [sim cmbt f]
   (update-in sim [:combatants (combatant/id cmbt)] f))
@@ -93,8 +97,8 @@
 
 (defn turn-order-list
   ([sim]
-   (turn-order-list sim 12 []))
-  ([sim i acc]
+   (turn-order-list 12 sim []))
+  ([i sim acc]
    (if (pos? i)
      (if-let [cmbt (active-cmbt sim)]
        (recur

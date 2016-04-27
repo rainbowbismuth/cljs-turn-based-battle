@@ -15,17 +15,121 @@
 ; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (ns tbb.core
-  (:require [reagent.core :as r]))
+  (:require [tbb.combatant :as combatant]
+            [tbb.simulation :as simulation]
+            [tbb.move :as move]
+            [tbb.ai.alphabeta :as alphabeta]
+            [reagent.core :as r]))
 
-(defonce model-atom (r/atom nil))
+(def initial-sim
+  (simulation/Simulation.
+    [(combatant/mk-combatant 0 :user "Alpha" :warrior)
+     (combatant/mk-combatant 1 :user "Beta" :thief)
+     (combatant/mk-combatant 2 :user "Gamma" :cleric)
+     (combatant/mk-combatant 3 :ai "Delta" :warrior)
+     (combatant/mk-combatant 4 :ai "Epsilon" :thief)
+     (combatant/mk-combatant 5 :ai "Zeta" :cleric)]
+    []))
 
-(def party-to-css-class {:ai "ai-party", :user "user-party"})
+(defn ai-if-necessary
+  [sim]
+  (if (simulation/game-over sim)
+    sim
+    (condp = (simulation/whos-turn (simulation/clock-tick-until-turn sim))
+      :ai (recur (alphabeta/play-ai sim))
+      :user sim)))
+
+(defonce model-atom (r/atom {:sim initial-sim :mov nil}))
+
+(defn reset-model!
+  []
+  (swap! model-atom (constantly {:sim initial-sim :mov nil})))
+
+(defn select-move!
+  [mv]
+  (condp = (move/type-of mv)
+    :single-target
+      (swap! model-atom #(assoc % :mov mv))
+    :self-target
+      (if-let [next-sim (simulation/simulate {:mv mv} (:sim @model-atom))]
+        (swap!
+          model-atom
+          #(assoc % :sim (simulation/clock-tick-until-turn (ai-if-necessary (:sim %))))))))
+
+(defn select-target!
+  [target]
+  (let [cmd {:mv (:mov @model-atom) :target target}]
+    (if-let [next-sim (simulation/simulate cmd (:sim @model-atom))]
+      (swap!
+        model-atom
+        #(assoc % :sim (simulation/clock-tick-until-turn (ai-if-necessary (:sim %))))))))
+
+(defn cancel-selection!
+  []
+  (swap! model-atom #(assoc % :mov nil)))
+
+(def player-to-css-class {:ai "party ai-party", :user "party user-party"})
+
+(defn tooltip
+  [txt]
+  [:div
+    {:class "tooltip"}
+    txt])
+
+(defn view-combatant-ap
+  [cmbt]
+  [:div
+    {:class "combatant-ap tooltip-container"}
+    [:span
+      {:class "combatant-ap-label"}
+      "AP"]
+    [:span
+      {:class "combatant-ap-filled"}
+      (apply str (repeat (combatant/ap cmbt) "•"))]
+    [:span
+      {:class "combatant-ap-empty"}
+      (apply str (repeat (- 5 (combatant/ap cmbt)) "•"))]
+    (tooltip (str "This unit has " (combatant/ap cmbt) " AP to spend on moves."))])
+
+(defn view-combatant
+  [player model cmbt]
+  ^{:key (combatant/id cmbt)}
+  [:div
+    {:class (if (combatant/alive cmbt)
+              "combatant combatant-alive"
+              "combatant combatant-dead")}
+    [:div
+      {:class "combatant-status-bar"}
+      [:span
+        {:class "combatant-name tooltip-container"}
+        (combatant/get-name cmbt)
+        (tooltip "The unit's name")]
+      [:span
+        {:class "combatant-class tooltip-container"}
+        (str (:class cmbt))
+        (tooltip "The unit's class")]
+      [:div
+        {:class "combatant-hp tooltip-container"}
+        [:span
+          {:class "combatant-hp-label"}
+          "HP"]
+        (combatant/hp cmbt)
+        (tooltip "Health")]
+      (view-combatant-ap cmbt)
+      [:div
+        {:class "combatant-ct tooltip-container"}
+        [:span
+          {:class "combatant-ct-label"}
+          "CT"]
+        (combatant/ct cmbt)
+        (tooltip "Charge time, unit takes a turn when at least 100")]]])
 
 (defn view-party
-  [party model]
-  [:div
-    {:class (party-to-css-class party)}
-    "no party atm!"])
+  [player model]
+  (let [units (simulation/party player (:sim model))]
+    [:div
+      {:class (player-to-css-class player)}
+      (map (partial view-combatant player model) units)]))
 
 (defn view-combat-log-line
   [idx line]
@@ -40,13 +144,28 @@
   [model]
   [:div
     {:class "combat-log"}
-    (map-indexed view-combat-log-line ["just" "a" "test" "really" "for reals" "yup"])])
+    (map-indexed view-combat-log-line (simulation/combat-log (:sim model)))])
+
+(defn view-ct-bar-unit
+  [n cmbt]
+  ^{:key n}
+  [:div
+    {:class "ct-bar-unit"}
+    [:span
+      {:class "ct-bar-unit-num"}
+      (inc n)]
+    (combatant/get-name cmbt)])
 
 (defn view-ct-bar
   [model]
-  [:div
-    {:class "ct-bar"}
-    "still just a test"])
+  (let [order (simulation/turn-order-list (:sim model))]
+    (into
+      [:div
+        {:class "ct-bar"}
+        (if (empty? order)
+          "No turn order-list??"
+          "Turn Order")]
+      (map-indexed view-ct-bar-unit order))))
 
 (defn view
   [model]
@@ -57,7 +176,10 @@
       (view-party :ai @model-atom)
       (view-party :user @model-atom)
       (view-combat-log @model-atom)]
-    (view-ct-bar @model-atom)])
+    (view-ct-bar @model-atom)
+    [:button
+      {:on-click cancel-selection!}
+      "Reset!"]])
 
 (r/render-component [view]
   (.getElementById js/document "app"))
