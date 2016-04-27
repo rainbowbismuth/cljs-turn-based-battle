@@ -46,11 +46,11 @@
 
 (defn- get-cmbt
   [cmbt sim]
-  (get (.-combatants sim) (combatant/id cmbt)))
+  ((.-combatants sim) (combatant/id cmbt)))
 
 (defn- get-cmbt-by-id
   [id sim]
-  (get (.-combatants sim) id))
+  ((.-combatants sim) id))
 
 (defn- party-for
   [player]
@@ -79,13 +79,14 @@
   ([sim]
    (if-let [id (.-active sim)]
      (get-cmbt-by-id id sim)
-     (active-cmbt sim 0)))
+     (active-cmbt sim (count (.-combatants sim)) 0)))
 
-  ([sim i]
-   (if-let [cmbt (get (combatants sim) i)]
-    (if (combatant/can-i-have-active-turn cmbt)
-     cmbt
-     (recur sim (inc i))))))
+  ([sim cnt i]
+   (if (< i cnt)
+    (let [cmbt ((.-combatants sim) i)]
+      (if (combatant/can-i-have-active-turn cmbt)
+       cmbt
+       (recur sim cnt (inc i)))))))
 
 (defn do-i-have-active-turn
   [cmbt sim]
