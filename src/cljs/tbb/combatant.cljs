@@ -23,6 +23,18 @@
 (def starting-hp
   {:warrior 100, :thief 70, :cleric 80})
 
+(defn- set-ct
+  [cmbt new-ct]
+  (Combatant.
+    (.-id cmbt)
+    (.-player cmbt)
+    (.-name cmbt)
+    (.-class$ cmbt)
+    (.-hp cmbt)
+    (.-ap cmbt)
+    new-ct
+    (.-state cmbt)))
+
 (defn id
   [cmbt]
   (.-id cmbt))
@@ -93,7 +105,7 @@
 (defn clock-tick
   [cmbt]
   (if (alive cmbt)
-    (assoc cmbt :ct (+ (.-ct cmbt) (speed cmbt)))
+    (set-ct cmbt (+ (.-ct cmbt) (speed cmbt)))
     cmbt))
 
 (defn increase-ap
@@ -107,7 +119,7 @@
 
 (defn pay-turn-ct
   [cmbt]
-  (assoc cmbt :ct (- (.-ct cmbt) 100)))
+  (set-ct cmbt (- (.-ct cmbt) 100)))
 
 (defn to-default-state
   [cmbt]
