@@ -17,7 +17,8 @@
 (ns tbb.ai.alphabeta
   (:require [tbb.combatant :as combatant]
             [tbb.move :as move]
-            [tbb.simulation :as simulation]))
+            [tbb.simulation :as simulation]
+            [tbb.command :as command]))
 
 (defn- score-combatant
   [cmbt]
@@ -42,9 +43,9 @@
     :single-target
       (for [target (simulation/combatants sim)
             :when (combatant/alive target)]
-        {:mv mv :target (combatant/id target)})
+        (command/SingleTarget. mv (combatant/id target)))
     :self-target
-      (list {:mv mv})))
+      (list (command/SelfTarget. mv))))
 
 (defn- available-moves
   [sim]

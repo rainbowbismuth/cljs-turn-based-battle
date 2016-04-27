@@ -18,6 +18,7 @@
   (:require [tbb.combatant :as combatant]
             [tbb.simulation :as simulation]
             [tbb.move :as move]
+            [tbb.command :as command]
             [tbb.ai.alphabeta :as alphabeta]
             [reagent.core :as r]))
 
@@ -59,14 +60,14 @@
     :single-target
       (swap! model-atom #(assoc % :mov mv))
     :self-target
-      (if-let [next-sim (simulation/simulate {:mv mv} (:sim @model-atom))]
+      (if-let [next-sim (simulation/simulate (command/SelfTarget. mv) (:sim @model-atom))]
         (swap!
           model-atom
           #(swap-sim % next-sim)))))
 
 (defn select-target!
   [target]
-  (let [cmd {:mv (:mov @model-atom) :target target}]
+  (let [cmd (command/SingleTarget. (:mov @model-atom) target)]
     (if-let [next-sim (simulation/simulate cmd (:sim @model-atom))]
       (swap!
         model-atom

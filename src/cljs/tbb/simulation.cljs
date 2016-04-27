@@ -16,7 +16,8 @@
 
 (ns tbb.simulation
   (:require [tbb.combatant :as combatant]
-            [tbb.move :as move]))
+            [tbb.move :as move]
+            [tbb.command :as command]))
 
 (defrecord Simulation
   [combatants active combat-log])
@@ -190,5 +191,5 @@
           next-user (get-cmbt user next-sim)]
       (drop-active-turn
         (if-let [target (get cmd :target)]
-          (exec-single-target next-user (:mv cmd) (get-cmbt-by-id target next-sim) next-sim)
-          (exec-self-target next-user (:mv cmd) next-sim))))))
+          (exec-single-target next-user (command/move cmd) (get-cmbt-by-id target next-sim) next-sim)
+          (exec-self-target next-user (command/move cmd) next-sim))))))
