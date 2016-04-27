@@ -59,7 +59,7 @@
 (defn- alive-units-for
   [player]
   (comp
-    (filter (party-for player))
+    (party-for player)
     (filter combatant/alive)))
 
 (defn party
