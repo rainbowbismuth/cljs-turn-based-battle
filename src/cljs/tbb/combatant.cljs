@@ -93,21 +93,21 @@
 (defn clock-tick
   [cmbt]
   (if (alive cmbt)
-    (update cmbt :ct #(+ % (speed cmbt)))
+    (assoc cmbt :ct (+ (.-ct cmbt) (speed cmbt)))
     cmbt))
 
 (defn increase-ap
   [cmbt]
-  (update cmbt :ap #(min 5 (inc %))))
+  (assoc cmbt :ap (min 5 (inc (.-ap cmbt)))))
 
 (defn pay-ap
   [amount cmbt]
   (if (>= (ap cmbt) amount)
-    (update cmbt :ap #(- % amount))))
+    (assoc cmbt :ap (- (.-ap cmbt) amount))))
 
 (defn pay-turn-ct
   [cmbt]
-  (update cmbt :ct #(- % 100)))
+  (assoc cmbt :ct (- (.-ct cmbt) 100)))
 
 (defn to-default-state
   [cmbt]
