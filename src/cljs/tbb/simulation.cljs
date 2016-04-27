@@ -166,13 +166,10 @@
 
 (defn append-msg
   [sim msg]
-  (update sim :combatlog #(conj % msg)))
-
-
-;  (Simulation.
-;    (.-combatants sim)
-;    (.-active sim)
-;    (conj (.-combatlog sim) msg)))
+  (Simulation.
+    (.-combatants sim)
+    (.-active sim)
+    (conj (.-combatlog sim) msg)))
 
 (defn- exec-single-target
   [user mv target sim]
