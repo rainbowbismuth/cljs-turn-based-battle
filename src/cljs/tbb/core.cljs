@@ -39,9 +39,11 @@
   [sim]
   (if (simulation/game-over sim)
     sim
-    (condp = (simulation/whos-turn (simulation/clock-tick-until-turn sim))
-      :ai (recur (alphabeta/play-ai sim))
-      :user sim)))
+    (let [next-sim (simulation/clock-tick-until-turn sim)]
+      (condp = (simulation/whos-turn next-sim)
+        :ai (recur (alphabeta/play-ai next-sim))
+        :user next-sim
+        nil next-sim))))
 
 (defonce model-atom (r/atom {:sim initial-sim :mov nil}))
 

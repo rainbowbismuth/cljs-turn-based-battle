@@ -102,7 +102,8 @@
   [sim]
   (if (.-active sim)
     sim
-    (if-not (game-over sim)
+    (if (game-over sim)
+      sim
       (if-let [cmbt (active-cmbt sim)]
         (set-active-cmbt (combatant/id cmbt)
           (update-cmbt sim cmbt combatant/increase-ap))
