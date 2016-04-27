@@ -32,19 +32,25 @@
 
 (defn- update-cmbt
   [sim cmbt f]
-  (update-in sim [:combatants (combatant/id cmbt)] f))
+  (Simulation.
+    (assoc (.-combatants sim) (combatant/id cmbt) (f cmbt))
+    (.-active sim)
+    (.-combatlog sim)))
 
 (defn- set-active-cmbt
-  [cmbt sim]
-  (assoc sim :active cmbt))
+  [id sim]
+  (Simulation.
+    (.-combatants sim)
+    id
+    (.-combatlog sim)))
 
 (defn- get-cmbt
   [cmbt sim]
-  (get (combatants sim) (combatant/id cmbt)))
+  (get (.-combatants sim) (combatant/id cmbt)))
 
 (defn- get-cmbt-by-id
   [id sim]
-  (get (combatants sim) id))
+  (get (.-combatants sim) id))
 
 (defn- party-for
   [player]
@@ -71,7 +77,7 @@
 
 (defn- active-cmbt
   ([sim]
-   (if-let [id (:active sim)]
+   (if-let [id (.-active sim)]
      (get-cmbt-by-id id sim)
      (active-cmbt sim 0)))
 
@@ -83,16 +89,18 @@
 
 (defn do-i-have-active-turn
   [cmbt sim]
-  (= (combatant/id cmbt) (:active sim)))
+  (= (combatant/id cmbt) (.-active sim)))
 
 (defn- clock-tick
   [sim]
-  (update sim :combatants
-    #(into [] (map combatant/clock-tick) %)))
+  (Simulation.
+    (into [] (map combatant/clock-tick) (.-combatants sim))
+    (.-active sim)
+    (.-combatlog sim)))
 
 (defn clock-tick-until-turn
   [sim]
-  (if (:active sim)
+  (if (.-active sim)
     sim
     (if-not (game-over sim)
       (if-let [cmbt (active-cmbt sim)]
