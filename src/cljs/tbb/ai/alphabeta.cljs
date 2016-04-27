@@ -101,9 +101,10 @@
 
 (defn- explore
   [sim cmd]
-  (if-let [next-sim (simulation/simulate cmd sim)]
-    (let [next-next-sim (simulation/clock-tick-until-turn next-sim)]
-      [cmd next-next-sim (evaluate-position next-next-sim 4)])))
+  (let [depth (- 10 (count (simulation/combatants sim)))]
+    (if-let [next-sim (simulation/simulate cmd sim)]
+      (let [next-next-sim (simulation/clock-tick-until-turn next-sim)]
+        [cmd next-next-sim (evaluate-position next-next-sim depth)]))))
 
 (defn play-ai
   [sim]
