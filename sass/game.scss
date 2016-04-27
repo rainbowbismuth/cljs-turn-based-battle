@@ -37,6 +37,18 @@
     -o-box-shadow: $f;
     box-shadow: $f;
 }
+@keyframes tbb-flip-book-anim-top {
+  0%   { opacity: 0; }
+  49%  { opacity: 0; }
+  50%  { opacity: 1; }
+  100% { opacity: 1; }
+}
+@keyframes tbb-flip-book-anim-bottom {
+  0%   { opacity: 1; }
+  49%  { opacity: 1; }
+  50%  { opacity: 0; }
+  100% { opacity: 0; }  
+}
 .tooltip-container {
     position: relative;
 }

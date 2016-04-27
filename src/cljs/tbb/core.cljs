@@ -21,6 +21,7 @@
             [tbb.class :as class]
             [tbb.command :as command]
             [tbb.ai.alphabeta :as alphabeta]
+            [tbb.image.animated :as animated]
             [reagent.core :as r]))
 
 (def initial-sim
@@ -125,10 +126,34 @@
 
 (defn view-combatant-class
   [cmbt]
-  [:span
+  [:div
     {:class "combatant-class tooltip-container"}
-    (str (class/name-of (:class cmbt)))
-    (tooltip "The unit's class")])
+    (condp = (:class cmbt)
+      :warrior
+        (animated/flip-book
+          "url(DawnLike/Player0.png)"
+          "url(DawnLike/Player1.png)"
+          16 0 16 16)
+      :thief
+        (animated/flip-book
+          "url(DawnLike/Player0.png)"
+          "url(DawnLike/Player1.png)"
+          (* 2 16) 16 16 16)
+      :cleric
+        (animated/flip-book
+          "url(DawnLike/Player0.png)"
+          "url(DawnLike/Player1.png)"
+          16 (* 5 16) 16 16))
+    (tooltip
+      (str "This unit is a "
+           (class/name-of (:class cmbt))))])
+
+; (defn view-combatant-class
+;   [cmbt]
+;   [:span
+;     {:class "combatant-class tooltip-container"}
+;     (str (class/name-of (:class cmbt)))
+;     (tooltip "The unit's class")])
 
 (defn view-combatant-name
   [cmbt]
