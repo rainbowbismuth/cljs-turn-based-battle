@@ -27,7 +27,7 @@
 
 (def sim
   (simulation/clock-tick-until-turn
-    (simulation/Simulation. [start-p1 start-p2] [])))
+    (simulation/Simulation. [start-p1 start-p2] nil [])))
 
 (def p1 (simulation/exists-and-alive 0 sim))
 
@@ -64,8 +64,23 @@
 (deftest can-play-ai
   (is (not= sim (alphabeta/play-ai sim))))
 
+(deftest non-empty-available-targets
+  (is (= 2 (count (alphabeta/targets-for-move sim :attack)))))
+
 (deftest non-empty-turn-order
   (is (not (empty? (simulation/turn-order-list sim)))))
+
+(deftest non-empty-available-moves
+  (is (not (empty? (alphabeta/available-moves sim)))))
+
+(deftest is-ai-turn
+  (is (= :ai (simulation/whos-turn sim))))
+
+(deftest all-moves-succeed
+  (is (= true
+         (every? some?
+            (for [cmd (alphabeta/available-moves sim)]
+              (simulation/simulate cmd sim))))))
 
 (enable-console-print!)
 (run-tests)

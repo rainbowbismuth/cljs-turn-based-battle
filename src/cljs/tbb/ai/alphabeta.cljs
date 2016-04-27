@@ -22,7 +22,9 @@
 (defn- score-combatant
   [cmbt]
   (let [bonus (if (combatant/alive cmbt) 50 0)
-        score (max 0 (+ (combatant/hp cmbt) bonus))]
+        score (max
+                0
+                (+ (combatant/hp cmbt) bonus))]
     (if (= (combatant/player cmbt) :ai)
       score
       (- score))))
@@ -57,27 +59,27 @@
 
 (defn- alphabeta-maximizing
   [cmds sim depth a b v]
-  (if-not (empty? cmds)
+  (if (empty? cmds)
+    v
     (if-let [next-sim (simulation/simulate (first cmds) sim)]
       (let [next-v (max v (alphabeta next-sim (dec depth) a b))
             next-a (max a next-v)]
         (if (< b next-a)
           next-v
           (recur (rest cmds) sim depth next-a b next-v)))
-      (recur (rest cmds) sim depth a b v))
-    v))
+      (recur (rest cmds) sim depth a b v))))
 
 (defn- alphabeta-minimizing
   [cmds sim depth a b v]
-  (if-not (empty? cmds)
+  (if (empty? cmds)
+    v
     (if-let [next-sim (simulation/simulate (first cmds) sim)]
       (let [next-v (min v (alphabeta next-sim (dec depth) a b))
             next-b (min b next-v)]
         (if (< next-b a)
           next-v
           (recur (rest cmds) sim depth a next-b next-v)))
-      (recur (rest cmds) sim depth a b v))
-    v))
+      (recur (rest cmds) sim depth a b v))))
 
 (defn- alphabeta
   [sim depth a b]
@@ -89,7 +91,7 @@
       :user
         (alphabeta-minimizing (available-moves sim) sim depth a b inf)
       nil
-        (alphabeta (simulation/clock-tick sim) depth a b))))
+        (recur (simulation/clock-tick sim) depth a b))))
 
 (defn- evaluate-position
   [sim depth]
@@ -107,14 +109,6 @@
          (available-moves sim)
          (map #(explore sim %))
          (filter some?)
-         (sort-by #(get % 2))
+         (sort-by #(- (get % 2)))
          (first))
        1))
-
-(comment
-  (defn play-ai
-    [sim]
-    (let [explored (for [cmd (available-moves sim)]
-                      (explore sim cmd))
-          sorted (sort-by #(get % 2) explored)]
-      ((first sorted) 1))))

@@ -30,6 +30,7 @@
        (combatant/mk-combatant 3 :ai "Delta" :warrior)
        (combatant/mk-combatant 4 :ai "Epsilon" :thief)
        (combatant/mk-combatant 5 :ai "Zeta" :cleric)]
+      nil
       [])))
 
 (defn ai-if-necessary

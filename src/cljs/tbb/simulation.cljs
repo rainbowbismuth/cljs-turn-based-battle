@@ -19,7 +19,7 @@
             [tbb.move :as move]))
 
 (defrecord Simulation
-  [combatants combat-log])
+  [combatants active combat-log])
 
 (defn combatants
   [sim]
@@ -32,6 +32,18 @@
 (defn- update-cmbt
   [sim cmbt f]
   (update-in sim [:combatants (combatant/id cmbt)] f))
+
+(defn- set-active-cmbt
+  [cmbt sim]
+  (assoc sim :active cmbt))
+
+(defn- get-cmbt
+  [cmbt sim]
+  (get (combatants sim) (combatant/id cmbt)))
+
+(defn- get-cmbt-by-id
+  [id sim]
+  (get (combatants sim) id))
 
 (defn- party-for
   [player]
@@ -58,7 +70,9 @@
 
 (defn- active-cmbt
   ([sim]
-   (active-cmbt sim 0))
+   (if-let [id (:active sim)]
+     (get-cmbt-by-id id sim)
+     (active-cmbt sim 0)))
 
   ([sim i]
    (if-let [cmbt (get (combatants sim) i)]
@@ -68,21 +82,22 @@
 
 (defn do-i-have-active-turn
   [cmbt sim]
-  (if-let [at-cmbt (active-cmbt sim)]
-    (= (combatant/id cmbt) (combatant/id at-cmbt))
-    false))
+  (= (combatant/id cmbt) (:active sim)))
 
-(defn clock-tick
+(defn- clock-tick
   [sim]
   (update sim :combatants
     #(into [] (map combatant/clock-tick) %)))
 
 (defn clock-tick-until-turn
   [sim]
-  (if-not (game-over sim)
-    (if-let [cmbt (active-cmbt sim)]
-      (update-cmbt sim cmbt combatant/increase-ap)
-      (recur (clock-tick sim)))))
+  (if (:active sim)
+    sim
+    (if-not (game-over sim)
+      (if-let [cmbt (active-cmbt sim)]
+        (set-active-cmbt (combatant/id cmbt)
+          (update-cmbt sim cmbt combatant/increase-ap))
+        (recur (clock-tick sim))))))
 
 (defn whos-turn
   [sim]
@@ -93,7 +108,9 @@
   [sim]
   (when sim
     (if-let [cmbt (active-cmbt sim)]
-      (update-cmbt sim cmbt combatant/pay-turn-ct))))
+      (clock-tick-until-turn
+        (set-active-cmbt nil
+          (update-cmbt sim cmbt combatant/pay-turn-ct))))))
 
 (defn turn-order-list
   ([sim]
@@ -103,7 +120,7 @@
      (if-let [cmbt (active-cmbt sim)]
        (recur
          (dec i)
-         (clock-tick-until-turn (drop-active-turn sim))
+         (drop-active-turn sim)
          (conj acc cmbt))
        (recur
          (dec i)
@@ -133,7 +150,7 @@
   [user mv]
   (condp = mv
     :defend
-      (let [updated (-> user
+      (let [updated (->> user
                         combatant/increase-ap
                         combatant/to-defend-state)]
         [updated (str (combatant/get-name updated) " has started defending.")])))
@@ -142,14 +159,6 @@
   [sim mv cmbt]
   (if-let [payed (combatant/pay-ap (move/cost mv) cmbt)]
     (update-cmbt sim payed (constantly payed))))
-
-(defn- get-cmbt
-  [cmbt sim]
-  (get (combatants sim) (combatant/id cmbt)))
-
-(defn- get-cmbt-by-id
-  [id sim]
-  (get (combatants sim) id))
 
 (defn- append-msg
   [sim msg]
