@@ -116,3 +116,11 @@
 (defn to-defend-state
   [cmbt]
   (assoc cmbt :state :defending))
+
+(defn friends-of
+  [plyr cmbt]
+  (= plyr (player cmbt)))
+
+(defn foes-of
+  [plyr cmbt]
+  (not= plyr (player cmbt)))

@@ -22,14 +22,15 @@
             [reagent.core :as r]))
 
 (def initial-sim
-  (simulation/Simulation.
-    [(combatant/mk-combatant 0 :user "Alpha" :warrior)
-     (combatant/mk-combatant 1 :user "Beta" :thief)
-     (combatant/mk-combatant 2 :user "Gamma" :cleric)
-     (combatant/mk-combatant 3 :ai "Delta" :warrior)
-     (combatant/mk-combatant 4 :ai "Epsilon" :thief)
-     (combatant/mk-combatant 5 :ai "Zeta" :cleric)]
-    []))
+  (simulation/clock-tick-until-turn
+    (simulation/Simulation.
+      [(combatant/mk-combatant 0 :user "Alpha" :warrior)
+       (combatant/mk-combatant 1 :user "Beta" :thief)
+       (combatant/mk-combatant 2 :user "Gamma" :cleric)
+       (combatant/mk-combatant 3 :ai "Delta" :warrior)
+       (combatant/mk-combatant 4 :ai "Epsilon" :thief)
+       (combatant/mk-combatant 5 :ai "Zeta" :cleric)]
+      [])))
 
 (defn ai-if-necessary
   [sim]
@@ -43,7 +44,13 @@
 
 (defn reset-model!
   []
-  (swap! model-atom (constantly {:sim initial-sim :mov nil})))
+  (swap! model-atom
+    (constantly {:sim initial-sim :mov nil})))
+
+(defn- swap-sim
+  [model next-sim]
+  (assoc model :mov nil :sim
+    (simulation/clock-tick-until-turn (ai-if-necessary next-sim))))
 
 (defn select-move!
   [mv]
@@ -54,7 +61,7 @@
       (if-let [next-sim (simulation/simulate {:mv mv} (:sim @model-atom))]
         (swap!
           model-atom
-          #(assoc % :sim (simulation/clock-tick-until-turn (ai-if-necessary (:sim %))))))))
+          #(swap-sim % next-sim)))))
 
 (defn select-target!
   [target]
@@ -62,7 +69,7 @@
     (if-let [next-sim (simulation/simulate cmd (:sim @model-atom))]
       (swap!
         model-atom
-        #(assoc % :sim (simulation/clock-tick-until-turn (ai-if-necessary (:sim %))))))))
+        #(swap-sim % next-sim)))))
 
 (defn cancel-selection!
   []
@@ -91,6 +98,85 @@
       (apply str (repeat (- 5 (combatant/ap cmbt)) "•"))]
     (tooltip (str "This unit has " (combatant/ap cmbt) " AP to spend on moves."))])
 
+(defn view-combatant-hp
+  [cmbt]
+  [:div
+    {:class "combatant-hp tooltip-container"}
+    [:span
+      {:class "combatant-hp-label"}
+      "HP"]
+    (combatant/hp cmbt)
+    (tooltip "Health")])
+
+(defn view-combatant-ct
+  [cmbt]
+  [:div
+    {:class "combatant-ct tooltip-container"}
+    [:span
+      {:class "combatant-ct-label"}
+      "CT"]
+    (combatant/ct cmbt)
+    (tooltip "Charge time, unit takes a turn when at least 100")])
+
+(defn view-combatant-class
+  [cmbt]
+  [:span
+    {:class "combatant-class tooltip-container"}
+    (str (:class cmbt))
+    (tooltip "The unit's class")])
+
+(defn view-combatant-name
+  [cmbt]
+  [:span
+    {:class "combatant-name tooltip-container"}
+    (combatant/get-name cmbt)
+    (tooltip "The unit's name")])
+
+(defn view-target
+  [cmbt]
+  (let [attrs (if (combatant/alive cmbt)
+                {:class "combatant-target combatant-target-alive"
+                 :on-click #(select-target! (combatant/id cmbt))}
+                {:class "combatant-target combatant-target-dead"})]
+    ^{:key (combatant/id cmbt)}
+    [:button attrs (combatant/get-name cmbt)]))
+
+(defn view-targets
+  [player model]
+  [:div
+    {:class "combatant-target-list"}
+    [:div
+      {:class "combatant-target-party"}
+      (->> (simulation/combatants (:sim model))
+        (filter (partial combatant/foes-of player))
+        (map view-target))]
+    [:div
+      {:class "combatant-target-party"}
+      (->> (simulation/combatants (:sim model))
+        (filter (partial combatant/friends-of player))
+        (map view-target))]
+    [:button
+      {:class "combatant-target-cancel"
+       :on-click cancel-selection!}
+      "Cancel"]])
+
+(defn view-move
+  [cmbt mv]
+  ^{:key mv}
+  [:button
+    (if (>= (combatant/ap cmbt) (move/cost mv))
+      {:class "combatant-move tooltip-container"
+       :on-click #(select-move! mv)}
+      {:class "combatant-move tooltip-container combatant-move-unusable"})
+    (str mv " " (apply str (repeat (move/cost mv) "•")))
+    (tooltip (move/tooltip mv))])
+
+(defn view-moves
+  [cmbt]
+  [:div
+    {:class "combatant-move-list"}
+    (map (partial view-move cmbt) (combatant/move-list cmbt))])
+
 (defn view-combatant
   [player model cmbt]
   ^{:key (combatant/id cmbt)}
@@ -100,29 +186,16 @@
               "combatant combatant-dead")}
     [:div
       {:class "combatant-status-bar"}
-      [:span
-        {:class "combatant-name tooltip-container"}
-        (combatant/get-name cmbt)
-        (tooltip "The unit's name")]
-      [:span
-        {:class "combatant-class tooltip-container"}
-        (str (:class cmbt))
-        (tooltip "The unit's class")]
-      [:div
-        {:class "combatant-hp tooltip-container"}
-        [:span
-          {:class "combatant-hp-label"}
-          "HP"]
-        (combatant/hp cmbt)
-        (tooltip "Health")]
+      (view-combatant-name cmbt)
+      (view-combatant-class cmbt)
+      (view-combatant-hp cmbt)
       (view-combatant-ap cmbt)
-      [:div
-        {:class "combatant-ct tooltip-container"}
-        [:span
-          {:class "combatant-ct-label"}
-          "CT"]
-        (combatant/ct cmbt)
-        (tooltip "Charge time, unit takes a turn when at least 100")]]])
+      (view-combatant-ct cmbt)]
+    (if (and (= :user (combatant/player cmbt))
+             (simulation/do-i-have-active-turn cmbt (:sim model)))
+      (if (:mov model)
+        (view-targets player model)
+        (view-moves cmbt)))])
 
 (defn view-party
   [player model]
@@ -144,7 +217,9 @@
   [model]
   [:div
     {:class "combat-log"}
-    (map-indexed view-combat-log-line (simulation/combat-log (:sim model)))])
+    (map-indexed
+      view-combat-log-line
+      (reverse (simulation/combat-log (:sim model))))])
 
 (defn view-ct-bar-unit
   [n cmbt]
@@ -162,9 +237,7 @@
     (into
       [:div
         {:class "ct-bar"}
-        (if (empty? order)
-          "No turn order-list??"
-          "Turn Order")]
+        "Turn Order"]
       (map-indexed view-ct-bar-unit order))))
 
 (defn view
@@ -178,7 +251,7 @@
       (view-combat-log @model-atom)]
     (view-ct-bar @model-atom)
     [:button
-      {:on-click cancel-selection!}
+      {:on-click reset-model!}
       "Reset!"]])
 
 (r/render-component [view]

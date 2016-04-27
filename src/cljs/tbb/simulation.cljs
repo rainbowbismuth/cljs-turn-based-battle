@@ -121,7 +121,7 @@
   [user mv target]
   (condp = mv
     :attack
-      (let [dmg (* (combatant/strength user) 20.0 (combatant/defense target))
+      (let [dmg (int (* (combatant/strength user) 20.0 (combatant/defense target)))
             msg (str (combatant/get-name user) " deals " dmg " damage to " (combatant/get-name target) ".")]
         [(update target :hp #(- % dmg)) msg])
     :heal
