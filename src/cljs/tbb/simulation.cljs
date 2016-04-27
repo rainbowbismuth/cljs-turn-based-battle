@@ -20,7 +20,7 @@
             [tbb.command :as command]))
 
 (defrecord Simulation
-  [combatants active combat-log])
+  [combatants active combatlog])
 
 (defn combatants
   [sim]
@@ -28,7 +28,7 @@
 
 (defn combat-log
   [sim]
-  (.-combat-log sim))
+  (.-combatlog sim))
 
 (defn- update-cmbt
   [sim cmbt f]
@@ -141,11 +141,13 @@
     :attack
       (let [dmg (int (* (combatant/strength user) 20.0 (combatant/defense target)))
             msg (str (combatant/get-name user) " deals " dmg " damage to " (combatant/get-name target) ".")]
-        [(update target :hp #(- % dmg)) msg])
+        [(update target :hp #(- % dmg))
+         msg])
     :heal
       (let [heal 45.0
             msg (str (combatant/get-name user) " heals " (combatant/get-name target) " for " heal " hitpoints.")]
-        [(update target :hp #(+ % heal)) msg])))
+        [(update target :hp #(+ % heal))
+         msg])))
 
 (defn- self-reaction
   [user mv]
@@ -154,16 +156,23 @@
       (let [updated (->> user
                         combatant/increase-ap
                         combatant/to-defend-state)]
-        [updated (str (combatant/get-name updated) " has started defending.")])))
+        [updated
+         (str (combatant/get-name updated) " has started defending.")])))
 
 (defn- try-pay
   [sim mv cmbt]
   (if-let [payed (combatant/pay-ap (move/cost mv) cmbt)]
     (update-cmbt sim payed (constantly payed))))
 
-(defn- append-msg
+(defn append-msg
   [sim msg]
-  (update sim :combat-log #(conj % msg)))
+  (update sim :combatlog #(conj % msg)))
+
+
+;  (Simulation.
+;    (.-combatants sim)
+;    (.-active sim)
+;    (conj (.-combatlog sim) msg)))
 
 (defn- exec-single-target
   [user mv target sim]

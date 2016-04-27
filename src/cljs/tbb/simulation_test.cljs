@@ -19,7 +19,8 @@
             [tbb.class :as class]
             [tbb.combatant :as combatant]
             [tbb.simulation :as simulation]
-            [tbb.ai.alphabeta :as alphabeta]))
+            [tbb.ai.alphabeta :as alphabeta]
+            [tbb.command :as command]))
 
 (def start-p1 (combatant/mk-combatant 0 :ai "Alpha" :warrior))
 
@@ -59,7 +60,7 @@
   (is (not= nil (simulation/try-pay sim :attack p1))))
 
 (deftest can-attack-with-p1
-  (is (not= nil (simulation/simulate {:mv :attack :target 1} sim))))
+  (is (not= nil (simulation/simulate (command/SingleTarget. :attack 1) sim)))) 
 
 (deftest can-play-ai
   (is (not= sim (alphabeta/play-ai sim))))
@@ -75,6 +76,9 @@
 
 (deftest is-ai-turn
   (is (= :ai (simulation/whos-turn sim))))
+
+(deftest can-append-msg
+  (is (some? (simulation/append-msg sim "message"))))
 
 (deftest all-moves-succeed
   (is (= true
