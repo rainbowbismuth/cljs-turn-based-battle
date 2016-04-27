@@ -112,6 +112,5 @@
          (available-moves sim)
          (map #(explore sim %))
          (filter some?)
-         (sort-by #(- (get % 2)))
-         (first))
+         (apply max-key #(get % 2)))
        1))
