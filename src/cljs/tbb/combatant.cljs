@@ -54,25 +54,25 @@
 
 (defn strength
   [cmbt]
-  (class/strength (:class cmbt)))
+  (class/strength (.-class$ cmbt)))
 
 (defn defense-bonus
   [cmbt]
-  (if (= (:state cmbt) :defending)
+  (if (= (.-state cmbt) :defending)
     0.5
     1.0))
 
 (defn defense
   [cmbt]
-  (* (defense-bonus cmbt) (class/defense (:class cmbt))))
+  (* (defense-bonus cmbt) (class/defense (.-class$ cmbt))))
 
 (defn speed
   [cmbt]
-  (class/speed (:class cmbt)))
+  (class/speed (.-class$ cmbt)))
 
 (defn move-list
   [cmbt]
-  (class/move-list (:class cmbt)))
+  (class/move-list (.-class$ cmbt)))
 
 (defn move-available
   [move cmbt]
@@ -80,7 +80,7 @@
 
 (defn alive
   [cmbt]
-  (> (:hp cmbt) 0))
+  (> (.-hp cmbt) 0))
 
 (defn dead
   [cmbt]
@@ -88,7 +88,7 @@
 
 (defn can-i-have-active-turn
   [cmbt]
-  (and (alive cmbt) (>= (:ct cmbt) 100)))
+  (and (alive cmbt) (>= (.-ct cmbt) 100)))
 
 (defn clock-tick
   [cmbt]
