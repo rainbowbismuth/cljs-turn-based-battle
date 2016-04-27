@@ -60,13 +60,13 @@
   (is (not= nil (simulation/try-pay sim :attack p1))))
 
 (deftest can-attack-with-p1
-  (is (not= nil (simulation/simulate (command/SingleTarget. :attack 1) sim)))) 
+  (is (not= nil (simulation/simulate (command/SingleTarget. :attack 1) sim))))
 
 (deftest can-play-ai
   (is (not= sim (alphabeta/play-ai sim))))
 
 (deftest non-empty-available-targets
-  (is (= 2 (count (alphabeta/targets-for-move sim :attack)))))
+  (is (= 1 (count (alphabeta/targets-for-move sim :attack)))))
 
 (deftest non-empty-turn-order
   (is (not (empty? (simulation/turn-order-list sim)))))

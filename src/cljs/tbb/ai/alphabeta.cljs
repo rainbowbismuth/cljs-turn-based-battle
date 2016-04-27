@@ -39,13 +39,14 @@
 
 (defn- targets-for-move
   [sim mv]
-  (condp = (move/type-of mv)
-    :single-target
-      (for [target (simulation/combatants sim)
-            :when (combatant/alive target)]
-        (command/SingleTarget. mv (combatant/id target)))
-    :self-target
-      (list (command/SelfTarget. mv))))
+  (if-let [user (simulation/active-cmbt sim)]
+    (condp = (move/type-of mv)
+      :single-target
+        (for [target (simulation/combatants sim)
+              :when (combatant/should-use-on user mv target)]
+          (command/SingleTarget. mv (combatant/id target)))
+      :self-target
+        (list (command/SelfTarget. mv)))))
 
 (defn- available-moves
   [sim]

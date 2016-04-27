@@ -117,6 +117,14 @@
   [cmbt]
   (assoc cmbt :state :defending))
 
+(defn friends
+  [cmbt-a cmbt-b]
+  (= (player cmbt-a) (player cmbt-b)))
+
+(defn foes
+  [cmbt-a cmbt-b]
+  (not= (player cmbt-a) (player cmbt-b)))
+
 (defn friends-of
   [plyr cmbt]
   (= plyr (player cmbt)))
@@ -124,3 +132,9 @@
 (defn foes-of
   [plyr cmbt]
   (not= plyr (player cmbt)))
+
+(defn should-use-on
+  [user mv target]
+  (condp = mv
+    :attack (and (foes user target) (alive target))
+    :heal (and (friends user target) (alive target))))
