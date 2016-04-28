@@ -282,7 +282,7 @@
       (map-indexed view-ct-bar-unit order))))
 
 (defn view
-  [model]
+  []
   [:div
     {:class "game"}
     [:div
