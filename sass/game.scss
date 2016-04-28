@@ -55,7 +55,7 @@
 $tooltip-color: #1496bb;
 .tooltip-container .tooltip {
     width: 100%;
-    font-size: 12;
+    font-size: 14px;
     font-variant: normal;
     background: $tooltip-color;
     bottom: 100%;
@@ -129,8 +129,8 @@ $tooltip-color: #1496bb;
     flex-grow: 3;
     max-width: 33px;
     min-width: 33px;
-    padding-left: 0.2em;
-    padding-right: 0.2em;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
 }
 .combatant-ap,
 .combatant-ct,
