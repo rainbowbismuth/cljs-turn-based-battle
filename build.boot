@@ -1,9 +1,11 @@
 (set-env!
   :source-paths #{"src/cljs"}
   :resource-paths #{"html" "sass"}
-  :dependencies '[[org.clojure/clojure "1.8.0"]
+  :dependencies '[[org.clojure/clojure "1.7.0"]
                   [org.clojure/clojurescript "1.8.51"]
                   [boot/core "2.5.1" :scope "provided"]
+                  [proto-repl "0.1.2"]
+                  [org.clojure/tools.namespace "0.2.11"]
                   [tolitius/boot-check "0.1.1"]
                   [adzerk/boot-cljs "1.7.170-3"]
                   [pandeiro/boot-http "0.7.0"]
