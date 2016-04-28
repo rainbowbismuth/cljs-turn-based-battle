@@ -133,17 +133,17 @@
         (animated/flip-book
           "url(DawnLike/Player0.png)"
           "url(DawnLike/Player1.png)"
-          16 0 16 16)
+          32 0 32 32)
       :thief
         (animated/flip-book
           "url(DawnLike/Player0.png)"
           "url(DawnLike/Player1.png)"
-          (* 2 16) 16 16 16)
+          (* 2 32) 32 32 32)
       :cleric
         (animated/flip-book
           "url(DawnLike/Player0.png)"
           "url(DawnLike/Player1.png)"
-          16 (* 5 16) 16 16))
+          32 (* 5 32) 32 32))
     (tooltip
       (str "This unit is a "
            (class/name-of (:class cmbt))))])
