@@ -26,7 +26,10 @@
   tidy
   "Make sure your code is squeeky clean"
   []
-  (check/with-kibit))
+  (comp
+    (check/with-kibit)
+    (check/with-yagni)
+    (check/with-bikeshed)))
 
 (deftask
   dev

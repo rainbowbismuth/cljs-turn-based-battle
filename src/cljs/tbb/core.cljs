@@ -65,7 +65,9 @@
     :single-target
       (swap! model-atom #(assoc % :mov mv))
     :self-target
-      (if-let [next-sim (simulation/simulate (command/SelfTarget. mv) (:sim @model-atom))]
+      (if-let [next-sim
+                (simulation/simulate
+                  (command/SelfTarget. mv) (:sim @model-atom))]
         (swap!
           model-atom
           #(swap-sim % next-sim)))))
@@ -103,7 +105,9 @@
     [:span
       {:class "combatant-ap-empty"}
       (string/join (repeat (- 5 (combatant/ap cmbt)) "•"))]
-    (tooltip (str "This unit has " (combatant/ap cmbt) " AP to spend on moves."))])
+    (tooltip (str "This unit has "
+                  (combatant/ap cmbt)
+                  " AP to spend on moves."))])
 
 (defn view-combatant-hp
   [cmbt]
