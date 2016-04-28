@@ -52,6 +52,7 @@
 .tooltip-container {
     position: relative;
 }
+$sprite-size: 32px;
 $tooltip-color: #1496bb;
 .tooltip-container .tooltip {
     width: 100%;
@@ -111,7 +112,7 @@ $tooltip-color: #1496bb;
 .combatant-status-bar {
     display: flex;
     flex-wrap: nowrap;
-    min-height: 33px;
+    min-height: $sprite-size + 1;
 }
 .combatant-attributes {
     flex-grow: 3;
@@ -127,8 +128,8 @@ $tooltip-color: #1496bb;
 .combatant-class {
     color: #AAAAAA;
     flex-grow: 3;
-    max-width: 33px;
-    min-width: 33px;
+    max-width: $sprite-size + 1;
+    min-width: $sprite-size + 1;
     padding-left: 0.5em;
     padding-right: 0.5em;
 }

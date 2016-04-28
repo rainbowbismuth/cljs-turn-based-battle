@@ -124,6 +124,8 @@
     (combatant/ct cmbt)
     (tooltip "Charge time, unit takes a turn when at least 100")])
 
+(def sprite-size 32)
+
 (defn view-combatant-class
   [cmbt]
   [:div
@@ -133,17 +135,26 @@
         (animated/flip-book
           "url(DawnLike/Player0.png)"
           "url(DawnLike/Player1.png)"
-          32 0 32 32)
+          sprite-size
+          0
+          sprite-size
+          sprite-size)
       :thief
         (animated/flip-book
           "url(DawnLike/Player0.png)"
           "url(DawnLike/Player1.png)"
-          (* 2 32) 32 32 32)
+          (* 2 sprite-size)
+          sprite-size
+          sprite-size
+          sprite-size)
       :cleric
         (animated/flip-book
           "url(DawnLike/Player0.png)"
           "url(DawnLike/Player1.png)"
-          32 (* 5 32) 32 32))
+          sprite-size
+          (* 5 sprite-size)
+          sprite-size
+          sprite-size))
     (tooltip
       (str "This unit is a "
            (class/name-of (combatant/get-class cmbt))))])
