@@ -113,9 +113,16 @@ $tooltip-color: #1496bb;
     flex-wrap: nowrap;
     min-height: 33px;
 }
+.combatant-attributes {
+    flex-grow: 3;
+    display: flex;
+    flex-wrap: nowrap;
+}
 .combatant-name {
     flex-grow: 1;
-    @include small-label-font(8);
+    text-align: center;
+    width: 4em;
+    @include small-label-font(1.5em);
 }
 .combatant-class {
     color: #AAAAAA;
@@ -128,10 +135,11 @@ $tooltip-color: #1496bb;
 .combatant-ct,
 .combatant-hp {
     flex-grow: 1;
+    height: 100%;
     @include complete-border;
 }
 .combatant-ap-label {
-    @include small-label-font(8);
+    @include small-label-font(1em);
     padding-right: 0.3em;
 }
 .combatant-ap-filled {}
@@ -139,11 +147,11 @@ $tooltip-color: #1496bb;
     color: lightgray;
 }
 .combatant-hp-label {
-    @include small-label-font(8);
+    @include small-label-font(1em);
     padding-right: 0.3em;
 }
 .combatant-ct-label {
-    @include small-label-font(8);
+    @include small-label-font(1em);
     padding-right: 0.3em;
 }
 .combatant-move-list {

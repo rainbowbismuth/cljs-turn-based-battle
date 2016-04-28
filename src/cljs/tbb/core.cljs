@@ -210,10 +210,12 @@
     [:div
       {:class "combatant-status-bar"}
       (view-combatant-class cmbt)
-      (view-combatant-name cmbt)
-      (view-combatant-hp cmbt)
-      (view-combatant-ap cmbt)
-      (view-combatant-ct cmbt)]
+      [:div
+        {:class "combatant-attributes"}
+        (view-combatant-name cmbt)
+        (view-combatant-hp cmbt)
+        (view-combatant-ap cmbt)
+        (view-combatant-ct cmbt)]]
     (if (and (= :user (combatant/player cmbt))
              (simulation/do-i-have-active-turn cmbt (:sim model)))
       (if (:mov model)
