@@ -128,7 +128,7 @@
   [cmbt]
   [:div
     {:class "combatant-class tooltip-container"}
-    (condp = (:class cmbt)
+    (condp = (combatant/get-class cmbt)
       :warrior
         (animated/flip-book
           "url(DawnLike/Player0.png)"
@@ -146,7 +146,7 @@
           32 (* 5 32) 32 32))
     (tooltip
       (str "This unit is a "
-           (class/name-of (:class cmbt))))])
+           (class/name-of (combatant/get-class cmbt))))])
 
 (defn view-combatant-name
   [cmbt]

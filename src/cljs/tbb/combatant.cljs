@@ -47,6 +47,10 @@
   [cmbt]
   (.-name cmbt))
 
+(defn get-class
+  [cmbt]
+  (.-class$ cmbt))
+
 (defn ap
   [cmbt]
   (.-ap cmbt))
