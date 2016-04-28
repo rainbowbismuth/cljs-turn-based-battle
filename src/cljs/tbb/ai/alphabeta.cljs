@@ -85,7 +85,7 @@
 
 (defn- alphabeta
   [sim depth a b]
-  (if (or (= depth 0) (simulation/game-over sim))
+  (if (or (zero? depth) (simulation/game-over sim))
     (score sim)
     (condp = (simulation/whos-turn sim)
       :ai

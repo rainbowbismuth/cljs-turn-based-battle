@@ -15,7 +15,8 @@
 ; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (ns tbb.core
-  (:require [tbb.combatant :as combatant]
+  (:require [clojure.string :as string]
+            [tbb.combatant :as combatant]
             [tbb.simulation :as simulation]
             [tbb.move :as move]
             [tbb.class :as class]
@@ -98,10 +99,10 @@
       "AP"]
     [:span
       {:class "combatant-ap-filled"}
-      (apply str (repeat (combatant/ap cmbt) "•"))]
+      (string/join (repeat (combatant/ap cmbt) "•"))]
     [:span
       {:class "combatant-ap-empty"}
-      (apply str (repeat (- 5 (combatant/ap cmbt)) "•"))]
+      (string/join (repeat (- 5 (combatant/ap cmbt)) "•"))]
     (tooltip (str "This unit has " (combatant/ap cmbt) " AP to spend on moves."))])
 
 (defn view-combatant-hp
@@ -202,7 +203,7 @@
       {:class "combatant-move tooltip-container"
        :on-click #(select-move! mv)}
       {:class "combatant-move tooltip-container combatant-move-unusable"})
-    (str (move/name-of mv) " " (apply str (repeat (move/cost mv) "•")))
+    (str (move/name-of mv) " " (string/join (repeat (move/cost mv) "•")))
     (tooltip (move/tooltip mv))])
 
 (defn view-moves

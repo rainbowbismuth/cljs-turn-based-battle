@@ -3,6 +3,8 @@
   :resource-paths #{"html" "sass"}
   :dependencies '[[org.clojure/clojure "1.8.0"]
                   [org.clojure/clojurescript "1.8.51"]
+                  [boot/core "2.5.1" :scope "provided"]
+                  [tolitius/boot-check "0.1.1"]
                   [adzerk/boot-cljs "1.7.170-3"]
                   [pandeiro/boot-http "0.7.0"]
                   [adzerk/boot-reload "0.4.2"]
@@ -17,7 +19,14 @@
          '[pandeiro.boot-http :refer [serve]]
          '[adzerk.boot-reload :refer [reload]]
          '[adzerk.boot-cljs-repl :refer [cljs-repl start-repl]]
-         '[mathias.boot-sassc :refer [sass]])
+         '[mathias.boot-sassc :refer [sass]]
+         '[tolitius.boot-check :as check])
+
+(deftask
+  tidy
+  "Make sure your code is squeeky clean"
+  []
+  (check/with-kibit))
 
 (deftask
   dev

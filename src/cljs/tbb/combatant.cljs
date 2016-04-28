@@ -96,7 +96,7 @@
 
 (defn alive
   [cmbt]
-  (> (.-hp cmbt) 0))
+  (pos? (.-hp cmbt)))
 
 (defn dead
   [cmbt]

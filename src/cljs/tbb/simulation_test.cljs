@@ -36,13 +36,13 @@
 
 (deftest p1-should-have-1-ap
   (is (= 1 (combatant/ap p1)))
-  (is (= 0 (combatant/ap p2))))
+  (is (zero? (combatant/ap p2))))
 
 (deftest can-pay-ap-on-p1
-  (is (= 0 (combatant/ap (combatant/pay-ap 1 p1)))))
+  (is (zero? (combatant/ap (combatant/pay-ap 1 p1)))))
 
 (deftest cant-pay-ap-on-p2
-  (is (= nil (combatant/pay-ap 1 p2))))
+  (is (nil? (combatant/pay-ap 1 p2))))
 
 (deftest can-update-cmbt
   (is (not= nil (simulation/update-cmbt sim p1 combatant/to-defend-state))))
@@ -69,10 +69,10 @@
   (is (= 1 (count (alphabeta/targets-for-move sim :attack)))))
 
 (deftest non-empty-turn-order
-  (is (not (empty? (simulation/turn-order-list sim)))))
+  (is (seq (simulation/turn-order-list sim))))
 
 (deftest non-empty-available-moves
-  (is (not (empty? (alphabeta/available-moves sim)))))
+  (is (seq (alphabeta/available-moves sim))))
 
 (deftest is-ai-turn
   (is (= :ai (simulation/whos-turn sim))))
@@ -81,7 +81,7 @@
   (is (some? (simulation/append-msg sim "message"))))
 
 (deftest all-moves-succeed
-  (is (= true
+  (is (true?
          (every? some?
             (for [cmd (alphabeta/available-moves sim)]
               (simulation/simulate cmd sim))))))
