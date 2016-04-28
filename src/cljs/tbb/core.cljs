@@ -209,8 +209,8 @@
               "combatant combatant-dead")}
     [:div
       {:class "combatant-status-bar"}
-      (view-combatant-name cmbt)
       (view-combatant-class cmbt)
+      (view-combatant-name cmbt)
       (view-combatant-hp cmbt)
       (view-combatant-ap cmbt)
       (view-combatant-ct cmbt)]

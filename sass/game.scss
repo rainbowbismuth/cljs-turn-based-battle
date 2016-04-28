@@ -115,6 +115,7 @@ $tooltip-color: #1496bb;
 }
 .combatant-name {
     flex-grow: 1;
+    @include small-label-font(8);
 }
 .combatant-class {
     color: #AAAAAA;
